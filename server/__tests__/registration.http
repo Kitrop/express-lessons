@@ -2,6 +2,6 @@ POST localhost:5000/api/registration
 Content-Type: application/json
 
 {
-  "email": "veryyoshicool123123131@gmail.com",
-  "password": ""
+  "email": "veryyoshicoolzxc@gmail.com",
+  "password": "Hgy>bVNOJF123"
 }

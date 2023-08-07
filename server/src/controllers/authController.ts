@@ -1,42 +1,55 @@
 import {NextFunction, Request, Response} from "express"
 import usersService from "../services/usersService";
+import {compare} from "bcrypt";
+import tokenService from "../services/tokenService";
+import {TokenModel} from "../modules/tokenModel";
 
 export const authController = {
     async registration(email: string, password: string) {
-        try {
-            const userData = await usersService.registration(email, password)
-            return userData
-        } catch (e) {
-            console.log(e)
-        }
+        // Отправляем email и password для регистрации пользователя
+        return await usersService.registration(email, password)
     },
-    async login(req: Request, res: Response, next: NextFunction) {
-        try {
-            res.json('2')
-        } catch (e) {
-            console.log(e)
+    async login(email: string, password: string) {
+        // Находим пользователя по email
+        const user = await usersService.login(email)
+        // Если пользователь существует
+        if (user) {
+            // Сравниваем хэшированый пароль и пароль пользователя
+            const checkPass = await compare(password, user.password)
+            // Если пароли совпадают
+            if (checkPass) {
+
+                // Генерируем токены, добавляя payload
+                const tokens = tokenService.generateToken({
+                    _id: user._id,
+                    email: user.email,
+                    isActivated: user.isActivated
+                })
+
+                // Сохраняем токены в БД
+                await tokenService.saveToken(user._id.toString(), tokens.refreshToken)
+
+                return {
+                    data: {
+                        ...tokens,
+                        email: user.email,
+                        _id: user._id,
+                    }, status: 200
+                }
+            }
+
+            // Если пароли не совпадают
+            else return {data: 'Incorrect password', status: 401}
         }
+
+        // Если пользователя не существует
+        else return {data: 'No User with this email', status: 404}
     },
-    async logout(req: Request, res: Response, next: NextFunction) {
-        try {
-            res.json('3')
-        } catch (e) {
-            console.log(e)
-        }
+    async activate(link: string) {
+        return await usersService.activation(link)
     },
-    async activate(req: Request, res: Response, next: NextFunction) {
-        try {
-            res.json('4')
-        } catch (e) {
-            console.log(e)
-        }
-    },
-    async refresh(req: Request, res: Response, next: NextFunction) {
-        try {
-            res.json('5')
-        } catch (e) {
-            console.log(e)
-        }
+    async refresh(refreshToken: string) {
+
     },
     async getUsers(req: Request, res: Response, next: NextFunction) {
         try {
