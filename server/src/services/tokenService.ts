@@ -7,7 +7,7 @@ dotenv.config()
 const tokenService = {
     // Создание токена
     generateToken(payload) {
-        const accessToken = sign(payload, process.env.SECRET_KEY_ACCESS, {expiresIn: '30m'})
+        const accessToken = sign(payload, process.env.SECRET_KEY_ACCESS, {expiresIn: '30s'})
         const refreshToken = sign(payload, process.env.SECRET_KEY_REFRESH, {expiresIn: '30d'})
         return {accessToken, refreshToken}
     },

@@ -3,7 +3,6 @@ import {hash} from "bcrypt"
 import {v4} from "uuid"
 import mailService from "./mailService"
 import tokenService from "./tokenService";
-import {verify} from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config()
@@ -101,7 +100,6 @@ const usersService = {
             }
         }
     },
-
     async refresh(refreshToken: string) {
         // Если токен пустой
         if (!refreshToken) {
@@ -137,7 +135,31 @@ const usersService = {
                 _id: userData._id,
             }, status: 200
         }
+    },
+    async getAllUsers() {
+        // Находим всех пользователей
+        const usersData = await UserModel.find()
+        // Если произошла какая-либо ошибка
+        if (!usersData) {
+            return {
+                data: 'Error',
+                status: 400
+            }
+        }
+        // Возращаем только публичные данные
+        const data = usersData.map(u => {
+            return {
+                _id: u._id,
+                email: u.email,
+                isActivated: u.isActivated,
+            }
+        })
+        return {
+            data,
+            status: 200
+        };
     }
+
 }
 
 export default usersService

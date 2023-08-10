@@ -1,6 +1,6 @@
 import {Response, Router, Request} from "express";
 import {authController} from "../controllers/authController"
-import {checkLink, checkEmail, checkPassword} from "../middlewares/authMiddlewares";
+import {checkLink, checkEmail, checkPassword, authMiddleware} from "../middlewares/authMiddlewares";
 import {validationResult} from "express-validator";
 import usersService from "../services/usersService";
 
@@ -75,7 +75,7 @@ authRouter
     })
 
     // Обновление токена
-    .get('/refresh', async (req: Request, res: Response) =>{
+    .get('/refresh', async (req: Request, res: Response) => {
         const {refreshToken} = req.cookies
         // Отправляем устаревший refreshToken, чтобы получить новый
         const response = await usersService.refresh(refreshToken)
@@ -86,8 +86,12 @@ authRouter
         res.json(response.data).status(response.status)
     })
 
-    // Полученме пользователей
-    .get('/users', authController.getUsers)
+    // Получение пользователей
+    .get('/users', authMiddleware, async (req: Request, res: Response) => {
+        const response = await usersService.getAllUsers()
+        res.json(response).status(response.status)
+    })
+
 
 
 export default authRouter
