@@ -34,6 +34,7 @@ export const authController = {
                         ...tokens,
                         email: user.email,
                         _id: user._id,
+                        isActivated: user.isActivated
                     }, status: 200
                 }
             }

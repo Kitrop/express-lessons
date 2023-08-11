@@ -111,10 +111,12 @@ const usersService = {
         const tokenFromDb = await tokenService.findToken(refreshToken)
 
         // Если с токена не существует
-        if (!validationData || !tokenFromDb) {
+        if (!validationData) {
             return {data: 'Unauthorized user', status: 401}
         }
-
+        if (!tokenFromDb) {
+            return {data: 'No token in DB', status: 401}
+        }
         // @ts-ignore
         // Находим пользователя по id из токена
         const userData = await UserModel.findOne({_id: validationData._id})
@@ -159,7 +161,6 @@ const usersService = {
             status: 200
         };
     }
-
 }
 
 export default usersService

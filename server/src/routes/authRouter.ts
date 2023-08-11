@@ -44,8 +44,11 @@ authRouter
                 res.json({
                     accessToken: response.data.accessToken,
                     refreshToken: response.data.refreshToken,
-                    email: response.data.email,
-                    _id: response.data._id
+                    user: {
+                        email: response.data.email,
+                        isActivated: response.data.isActivated,
+                        _id: response.data._id
+                    }
                 }).status(response.status)
             }
             // Если вход прошел неуспешно
@@ -69,6 +72,7 @@ authRouter
         if (result.isEmpty()) {
             const response = await authController.activate(req.params.link)
             res.json(response.data).status(response.status)
+            res.redirect('http://localhost:3000/');
         } else {
             res.status(400).json({errors: result.array()})
         }

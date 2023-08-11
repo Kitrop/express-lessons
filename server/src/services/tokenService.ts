@@ -27,7 +27,7 @@ const tokenService = {
     },
     validateRefreshToken(refreshToken: string) {
         try {
-            const data = verify(refreshToken, process.env.SECRET_KEY_REFRESH)
+            const data = verify(refreshToken, '1O8STjXh1nuKAqPRhtdOCwKOubQdyH0a')
             console.log('Verify data: ' + data)
             return data
         } catch (e) {
